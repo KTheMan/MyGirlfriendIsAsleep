@@ -6,25 +6,30 @@
 
 - **Cross-Platform**: Works on Windows, macOS, and Linux.
 - **Dependency Checks**: Automatically verifies the presence of required tools and provides installation guidance.
-- **Delayed Monitor Activation**: With the `--mygirlfriendisasleep` flag, set a specific time for the monitors to reactivate.
+- **Delayed Monitor Activation**: With the `--shesasleepuntil` flag, set a specific time for the monitors to reactivate. Use `--force` to turn on the display before the set time.
 
 ## Usage
 
-Run the executable:
+After compiling with PyInstaller, you can run the executable:
 
 - **Turn off the display**: 
   ```bash
-  ./mygirlfriendisasleep
+  ./mygirlfriendisasleep off
+  ```
+
+- **Turn on the display**:
+  ```bash
+  ./mygirlfriendisasleep on
+  ```
+
+- **Turn on the display forcibly (useful after setting a `--shesasleepuntil` time)**:
+  ```bash
+  ./mygirlfriendisasleep on --force
   ```
 
 - **Turn off the display and turn it back on at a specified time (e.g., 2:25 PM)**:
   ```bash
-  ./mygirlfriendisasleep --shesasleepuntil 14:25
-  ```
-
-- **Forcibly turn the display back on**:
-  ```bash
-  ./mygirlfriendisasleep --forceon
+  ./mygirlfriendisasleep off --shesasleepuntil 14:25
   ```
 
 ## Dependencies

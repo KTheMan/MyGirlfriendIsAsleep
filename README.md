@@ -2,6 +2,8 @@
 
 `MyGirlfriendIsAsleep` is a cross-platform script designed to help users turn off their physical displays with the option to automatically turn them back on at a specified time. Especially useful when you want to keep your room dark while streaming content!
 
+[![Build and Release](https://github.com/KTheMan/MyGirlfriendIsAsleep/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/KTheMan/MyGirlfriendIsAsleep/actions/workflows/build-and-release.yml)
+
 ## Features
 
 - **Cross-Platform**: Works on Windows, macOS, and Linux.

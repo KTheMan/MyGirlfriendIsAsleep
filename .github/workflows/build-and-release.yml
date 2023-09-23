@@ -7,10 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: Build
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
 
     steps:
     - name: Checkout code
@@ -19,7 +20,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.x
+        python-version: '3.x'
 
     - name: Install dependencies
       run: |
@@ -32,48 +33,38 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: mygirlfriendisasleep-${{ matrix.os }}
-        path: dist/mygirlfriendisasleep
+        name: mygirlfriendisasleep-${{ matrix.platform }}
+        path: dist/mygirlfriendisasleep*
 
   release:
+    name: Release
     needs: build
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Download all artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v2
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Extract changes for the current release from CHANGELOG.md
+      id: changelog
+      run: |
+        # Extract lines between the current version and the previous version
+        CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
+        echo "::set-output name=content::$CHANGELOG_CONTENT"
+
+    - name: Create Release and Upload Artifacts
+      uses: gh-release/gh-release-action@v1
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
+        body: ${{ steps.changelog.outputs.content }}
         draft: false
         prerelease: false
-
-    - name: Upload Release Asset (Windows)
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep.exe
-        asset_name: mygirlfriendisasleep-win.exe
-        asset_content_type: application/octet-stream
-
-    - name: Upload Release Asset (macOS)
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep
-        asset_name: mygirlfriendisasleep-macos
-        asset_content_type: application/octet-stream
-
-    - name: Upload Release Asset (Linux)
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep
-        asset_name: mygirlfriendisasleep-linux
-        asset_content_type: application/octet-stream
+        files: |
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}

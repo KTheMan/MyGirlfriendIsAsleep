@@ -32,9 +32,6 @@ jobs:
           brew install inkscape libicns
           inkscape -z -e icon.png ./icon.svg
           png2icns icon.icns icon.png
-        else
-          sudo apt-get install -y inkscape
-          inkscape -z -e icon.png ./icon.svg
         fi
 
     - name: Build with PyInstaller

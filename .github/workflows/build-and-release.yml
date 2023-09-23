@@ -22,13 +22,31 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
+    - name: Install tools and convert icon
       run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
+        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+          choco install inkscape
+          inkscape -z -e icon.png ./icon.svg
+          magick convert icon.png icon.ico
+        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+          brew install inkscape libicns
+          inkscape -z -e icon.png ./icon.svg
+          png2icns icon.icns icon.png
+        else
+          sudo apt-get install -y inkscape
+          inkscape -z -e icon.png ./icon.svg
+        fi
 
     - name: Build with PyInstaller
-      run: pyinstaller --onefile mygirlfriendisasleep.py
+      run: |
+        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+          ICON_OPTION="--icon=icon.ico"
+        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+          ICON_OPTION="--icon=icon.icns"
+        else
+          ICON_OPTION=""
+        fi
+        pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -51,7 +69,6 @@ jobs:
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
-        # Extract lines between the current version and the previous version
         CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
         echo "::set-output name=content::$CHANGELOG_CONTENT"
 

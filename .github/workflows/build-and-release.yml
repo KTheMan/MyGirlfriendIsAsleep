@@ -1,84 +1,95 @@
 name: Build and Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types:
+      - created
 
 jobs:
   build:
-    name: Build
+    name: Build and Release
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
+        platform:
+          - windows-latest
+          - macos-latest
+          - ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-    - name: Install tools and convert icon
-      run: |
-        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          choco install inkscape
-          inkscape -z -e icon.png ./icon.svg
-          magick convert icon.png icon.ico
-        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          brew install inkscape libicns
-          inkscape -z -e icon.png ./icon.svg
-          png2icns icon.icns icon.png
-        fi
+      - name: Install Dependencies
+        run: |
+          if [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+            # Install necessary dependencies for Linux (if any)
+            # Add commands here to install any Linux-specific dependencies
+            echo "Installing Linux dependencies..."
+          elif [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            # Install necessary dependencies for Windows (if any)
+            # Add commands here to install any Windows-specific dependencies
+            echo "Installing Windows dependencies..."
+          elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+            # Install necessary dependencies for macOS (if any)
+            # Add commands here to install any macOS-specific dependencies
+            echo "Installing macOS dependencies..."
+          fi
 
-    - name: Build with PyInstaller
-      run: |
-        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          ICON_OPTION="--icon=icon.ico"
-        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          ICON_OPTION="--icon=icon.icns"
-        else
-          ICON_OPTION=""
-        fi
-        pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
+      - name: Install PyInstaller
+        run: pip install pyinstaller
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: mygirlfriendisasleep-${{ matrix.platform }}
-        path: dist/mygirlfriendisasleep*
+      - name: Build Executable
+        run: |
+          if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+              ICON_OPTION="--icon=icon.ico"
+            elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+              ICON_OPTION="--icon=icon.icns"
+            else
+              ICON_OPTION=""
+            fi
+            pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
+          elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+            if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+              ICON_OPTION="--icon=icon.ico"
+            elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+              ICON_OPTION="--icon=icon.icns"
+            else
+              ICON_OPTION=""
+            fi
+            pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
+          fi
+        shell: /usr/bin/bash -e {0}
+        env:
+          pythonLocation: /opt/hostedtoolcache/Python/3.11.5/x64
+          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.5/x64/lib
 
-  release:
-    name: Release
-    needs: build
-    runs-on: ubuntu-latest
+      - name: Upload Release Asset (Windows)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/mygirlfriendisasleep-windows-latest.exe
+          name: mygirlfriendisasleep-windows-latest.exe
+          content_type: application/octet-stream
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Upload Release Asset (macOS)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/mygirlfriendisasleep-macos-latest
+          name: mygirlfriendisasleep-macos-latest
+          content_type: application/octet-stream
 
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-
-    - name: Extract changes for the current release from CHANGELOG.md
-      id: changelog
-      run: |
-        CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
-        echo "::set-output name=content::$CHANGELOG_CONTENT"
-
-    - name: Create Release and Upload Artifacts
-      uses: gh-release/gh-release-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: ${{ steps.changelog.outputs.content }}
-        draft: false
-        prerelease: false
-        files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}
+      - name: Upload Release Asset (Linux)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/mygirlfriendisasleep-linux-latest
+          name: mygirlfriendisasleep-linux-latest
+          content_type: application/octet-stream

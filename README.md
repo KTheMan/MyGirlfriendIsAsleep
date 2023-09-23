@@ -10,7 +10,7 @@
 
 ## Usage
 
-After compiling with PyInstaller, you can run the executable:
+To can run the executable:
 
 - **Turn off the display**: 
   ```bash
@@ -22,14 +22,14 @@ After compiling with PyInstaller, you can run the executable:
   ./mygirlfriendisasleep on
   ```
 
-- **Turn on the display forcibly (useful after setting a `--shesasleepuntil` time)**:
-  ```bash
-  ./mygirlfriendisasleep on --force
-  ```
-
 - **Turn off the display and turn it back on at a specified time (e.g., 2:25 PM)**:
   ```bash
   ./mygirlfriendisasleep off --shesasleepuntil 14:25
+  ```
+
+- **Turn on the display forcibly (useful after setting a `--shesasleepuntil` time)**:
+  ```bash
+  ./mygirlfriendisasleep on --force
   ```
 
 ## Dependencies

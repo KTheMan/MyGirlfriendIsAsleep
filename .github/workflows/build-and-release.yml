@@ -86,7 +86,7 @@ jobs:
           ICON_OPTION=""
         fi
         pip install pyinstaller
-        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-${{ output.version }}" mygirlfriendisasleep.py
+        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-${{ steps.version.output.version }}" mygirlfriendisasleep.py
       shell: bash
 
     - name: Upload build artifacts

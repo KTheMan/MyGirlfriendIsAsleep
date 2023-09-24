@@ -25,10 +25,10 @@ jobs:
     - name: Convert icon
       run: |
         if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          magick -density "%[fx:96*512/50]" -background none icon.svg icon.ico
+          magick -density "%[fx:96*256/50]" -background none icon.svg icon.ico
         elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
           brew install svg2png libicns
-          svg2png -w 512 -h 512 ./icon.svg icon.png
+          svg2png -w 256 -h 256 ./icon.svg icon.png
           png2icns icon.icns icon.png
         fi
       shell: bash

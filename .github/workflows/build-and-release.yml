@@ -6,8 +6,33 @@ on:
       - 'v*'
 
 jobs:
+  icon-conversion:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '14'
+
+    - name: Install icon-gen
+      run: npm install -g icon-gen
+
+    - name: Generate .ico and .icns icons
+      run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256 --icns --icns-sizes 256
+
+    - name: Upload icons as artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: icons
+        path: ./icons
+   
   build:
     name: Build
+    needs: icon-conversion
     strategy:
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
@@ -22,30 +47,26 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Convert icon
-      run: |
-        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          magick -density "%[fx:96*256/50]" -background none icon.svg icon.ico
-        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          brew install svg2png libicns
-          svg2png -w 256 -h 256 ./icon.svg icon.png
-          png2icns icon.icns icon.png
-        fi
-      shell: bash
+    - name: Download icon artifact
+      if: matrix.platform == 'windows-latest' || matrix.platform == 'macos-latest'
+      uses: actions/download-artifact@v3
+      with:
+        name: icons
+        path: ./icons
 
     - name: Install and build with PyInstaller
       run: |
         if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          ICON_OPTION="--icon=icon.ico"
+          ICON_OPTION="--icon=./icons/icon.ico"
         elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          ICON_OPTION="--icon=icon.icns"
+          ICON_OPTION="--icon=./icons/icon.icns"
         else
           ICON_OPTION=""
         fi
         pip install pyinstaller
         pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
 
-    - name: Upload artifacts
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: mygirlfriendisasleep-${{ matrix.platform }}
@@ -60,7 +81,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Download artifacts
+    - name: Download build artifacts
       uses: actions/download-artifact@v3
 
     - name: Extract changes for the current release from CHANGELOG.md
@@ -79,6 +100,6 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows/mygirlfriendisasleep-${{ github.ref }}.exe
-          ./mygirlfriendisasleep-ubuntu/mygirlfriendisasleep-${{ github.ref }}
-          ./mygirlfriendisasleep-macos/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}

@@ -86,13 +86,14 @@ jobs:
         pip install pyinstaller
         pyinstaller --onefile $ICON_OPTION -n mygirlfriendisasleep-${{ env.version }} mygirlfriendisasleep.py
       shell: bash
-
+    
     - name: Rename executables for differentiation
+      if: matrix.platform != 'windows-latest'
       run: |
         if [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-mac
+          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-mac
         elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-linux
+          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-linux
         fi
 
     - name: Upload build artifacts

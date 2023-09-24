@@ -86,7 +86,7 @@ jobs:
           ICON_OPTION=""
         fi
         pip install pyinstaller
-        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-$version" mygirlfriendisasleep.py
+        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-${{ output.version }}" mygirlfriendisasleep.py
       shell: bash
 
     - name: Upload build artifacts
@@ -119,7 +119,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ needs.build.output.version }}
         name: MyGirlfriendIsAsleep ${{ needs.build.output.version }}
-        body: $changelog_content
+        body: "$changelog_content"
         draft: false
         prerelease: false
         files: |

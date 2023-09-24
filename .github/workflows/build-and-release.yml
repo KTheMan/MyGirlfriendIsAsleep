@@ -50,6 +50,7 @@ jobs:
    
   build:
     name: Build
+    id: build
     needs: icon-conversion
     strategy:
       matrix:
@@ -74,7 +75,7 @@ jobs:
         
     - name: Extract version from tag
       id: version
-      run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
     - name: Install and build with PyInstaller
       run: |
@@ -86,7 +87,7 @@ jobs:
           ICON_OPTION=""
         fi
         pip install pyinstaller
-        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-${{ steps.version.outputs.version }}" mygirlfriendisasleep.py
+        pyinstaller --onefile $ICON_OPTION -n "mygirlfriendisasleep-$version" mygirlfriendisasleep.py
       shell: bash
 
     - name: Upload build artifacts
@@ -110,19 +111,19 @@ jobs:
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
-        CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
-        echo "::set-output name=content::$CHANGELOG_CONTENT"
+        CHANGELOG_CONTENT=$(awk -v version=${{ needs.build.output.version }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
+        echo "changelog_content=$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
 
     - name: Create Release and Upload Artifacts
       uses: softprops/action-gh-release@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ steps.version.outputs.version }}
-        name: MyGirlfriendIsAsleep ${{ steps.version.outputs.version }}
-        body: ${{ steps.changelog.outputs.content }}
+        tag_name: ${{ needs.build.output.version }}
+        name: MyGirlfriendIsAsleep ${{ needs.build.output.version }}
+        body: $changelog_content
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ steps.version.outputs.version }}.exe
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ steps.version.outputs.version }}
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ steps.version.outputs.version }}
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ needs.build.output.version }}.exe
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ needs.build.output.version }}
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ needs.build.output.version }}

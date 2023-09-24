@@ -21,6 +21,9 @@ jobs:
     - name: Install icon-gen
       run: npm install -g icon-gen
 
+    - name: Make icons directory
+      run: mkdir icons
+
     - name: Generate .ico and .icns icons
       run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256 --icns --icns-sizes 256
 

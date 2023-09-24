@@ -25,7 +25,7 @@ jobs:
     - name: Convert icon
       run: |
         if [ "${{ matrix.platform }}" == "windows-latest" ]; then
-          magick -background transparent mvg:icon.svg icon.ico
+          magick -background transparent -size 512x512 mvg:icon.svg icon.ico
         elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
           brew install svg2png libicns
           svg2png -w 512 -h 512 ./icon.svg icon.png

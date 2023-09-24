@@ -77,10 +77,12 @@ jobs:
       run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
 
     - name: Debug print version
-      run: echo "Extracted Version: $version"
+      run: |
+        echo "Extracted Version: $version"
 
     - name: Debug print GITHUB_REF
-      run: echo "GITHUB_REF: $GITHUB_REF"
+      run: |
+        echo "GITHUB_REF: $GITHUB_REF"
 
     - name: Install and build with PyInstaller
       run: |

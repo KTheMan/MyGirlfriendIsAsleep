@@ -10,7 +10,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        platform: [windows, ubuntu, macos]
+        platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -24,9 +24,9 @@ jobs:
 
     - name: Convert icon
       run: |
-        if [ "${{ matrix.platform }}" == "windows" ]; then
+        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
           magick -density "%[fx:96*256/50]" -background none icon.svg icon.ico
-        elif [ "${{ matrix.platform }}" == "macos" ]; then
+        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
           brew install svg2png libicns
           svg2png -w 256 -h 256 ./icon.svg icon.png
           png2icns icon.icns icon.png
@@ -35,9 +35,9 @@ jobs:
 
     - name: Install and build with PyInstaller
       run: |
-        if [ "${{ matrix.platform }}" == "windows" ]; then
+        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
           ICON_OPTION="--icon=icon.ico"
-        elif [ "${{ matrix.platform }}" == "macos" ]; then
+        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
           ICON_OPTION="--icon=icon.icns"
         else
           ICON_OPTION=""

@@ -107,6 +107,14 @@ jobs:
     - name: Download build artifacts
       uses: actions/download-artifact@v3
 
+    - name: Rename executables for differentiation
+      run: |
+        if [ "${{ matrix.platform }}" == "macos-latest" ]; then
+          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-mac
+        elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-linux
+        fi
+
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
@@ -121,6 +129,6 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ env.version }}.exe
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ env.version }}
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ env.version }}
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-v${{ env.version }}.exe
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-v${{ env.version }}-mac
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-v${{ env.version }}-linux

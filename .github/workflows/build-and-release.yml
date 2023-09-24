@@ -110,16 +110,16 @@ jobs:
     - name: Rename executables for differentiation
       run: |
         if [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-mac
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-mac
         elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-linux
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-linux
         fi
 
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
         CHANGELOG_CONTENT=$(awk -v version=${{ env.version }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
-        echo "CHANGELOG_CONTENT" > ${{ github.workspace }}-CHANGELOG.txt
+        echo "$CHANGELOG_CONTENT" > ${{ github.workspace }}-CHANGELOG.txt
 
     - name: Create Release and Upload Artifacts
       uses: softprops/action-gh-release@v1
@@ -129,6 +129,6 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-v${{ env.version }}.exe
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-v${{ env.version }}-mac
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-v${{ env.version }}-linux
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ env.version }}.exe
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ env.version }}-mac
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ env.version }}-linux

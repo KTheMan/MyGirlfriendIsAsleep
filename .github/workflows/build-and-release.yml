@@ -109,16 +109,16 @@ jobs:
         CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
         echo "::set-output name=content::$CHANGELOG_CONTENT"
 
-  - name: Create Release and Upload Artifacts
-    uses: softprops/action-gh-release@v1
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      tag_name: ${{ github.ref }}
-      name: MyGirlfriendIsAsleep ${{ github.ref }}
-      body: ${{ steps.changelog.outputs.content }}
-      draft: false
-      prerelease: false
-      files: |
-        ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
-        ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
-        ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}
+    - name: Create Release and Upload Artifacts
+      uses: softprops/action-gh-release@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ github.ref }}
+        name: MyGirlfriendIsAsleep ${{ github.ref }}
+        body: ${{ steps.changelog.outputs.content }}
+        draft: false
+        prerelease: false
+        files: |
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}

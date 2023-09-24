@@ -91,9 +91,9 @@ jobs:
       if: matrix.platform != 'windows-latest'
       run: |
         if [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-mac
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-mac
         elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-          mv dist/mygirlfriendisasleep-v${{ env.version }} dist/mygirlfriendisasleep-v${{ env.version }}-linux
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-linux
         fi
 
     - name: Upload build artifacts

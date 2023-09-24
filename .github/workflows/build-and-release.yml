@@ -74,8 +74,14 @@ jobs:
         
     - name: Extract version from tag
       id: version
-      run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
-
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        if [ -z "$VERSION" ]; then
+          echo "Version not set!"
+          exit 1
+        fi
+        echo "version=$VERSION" >> $GITHUB_ENV
+    
     - name: Install and build with PyInstaller
       run: |
         if [ "${{ matrix.platform }}" == "windows-latest" ]; then

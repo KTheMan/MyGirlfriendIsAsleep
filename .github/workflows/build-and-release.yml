@@ -25,10 +25,10 @@ jobs:
       run: mkdir icons
 
     - name: Generate .ico icon
-      run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256
+      run: icon-gen -r -i icon.svg -o ./icons --ico --ico-name icon --ico-sizes 256
 
     - name: Generate .icns icon
-      run: icon-gen -i icon.svg -o ./icons --icns --icns-sizes 256
+      run: icon-gen -r -i icon.svg -o ./icons --icns --icns-name icon --icns-sizes 1024
 
     - name: Check for generated icons
       run: |

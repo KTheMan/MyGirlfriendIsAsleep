@@ -6,7 +6,7 @@
 
 ## Features
 
-- **Cross-Platform**: Works on Windows, macOS, and Linux.
+- **Cross-Platform**: Works on Windows and Linux. Potential macOS support in the future
 - **Dependency Checks**: Automatically verifies the presence of required tools and provides installation guidance.
 - **Delayed Monitor Activation**: With the `--shesasleepuntil` flag, set a specific time for the monitors to reactivate. Use `--force` to turn on the display before the set time.
 

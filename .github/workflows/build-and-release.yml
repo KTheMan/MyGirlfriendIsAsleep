@@ -24,8 +24,11 @@ jobs:
     - name: Make icons directory
       run: mkdir icons
 
-    - name: Generate .ico and .icns icons
-      run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256 --icns --icns-sizes 256
+    - name: Generate .ico icon
+      run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256
+
+    - name: Generate .icns icon
+      run: icon-gen -i icon.svg -o ./icons --icns --icns-sizes 256
 
     - name: Check for generated icons
       run: |

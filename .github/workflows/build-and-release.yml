@@ -131,8 +131,9 @@ jobs:
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
-        CHANGELOG_CONTENT=$(awk -v version=${{ needs.build.output.version }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
-        echo "changelog_content=$CHANGELOG_CONTENT" >> "$GITHUB_OUTPUT"
+        CHANGELOG_CONTENT=$(awk -v version=${{ github.ref }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
+        ESCAPED_CHANGELOG_CONTENT=$(echo "$CHANGELOG_CONTENT" | sed 's/[\#\$\&\*\?\|\\"\<\>\;\(\)]/\\&/g')
+        echo "changelog_content=$ESCAPED_CHANGELOG_CONTENT" >> "$GITHUB_OUTPUT"
 
     - name: Create Release and Upload Artifacts
       uses: softprops/action-gh-release@v1

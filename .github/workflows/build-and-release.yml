@@ -10,23 +10,23 @@ jobs:
     name: Build
     strategy:
       matrix:
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        platform: [windows, ubuntu, macos]
     runs-on: ${{ matrix.platform }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
     - name: Convert icon
       run: |
-        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+        if [ "${{ matrix.platform }}" == "windows" ]; then
           magick -density "%[fx:96*256/50]" -background none icon.svg icon.ico
-        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+        elif [ "${{ matrix.platform }}" == "macos" ]; then
           brew install svg2png libicns
           svg2png -w 256 -h 256 ./icon.svg icon.png
           png2icns icon.icns icon.png
@@ -35,9 +35,9 @@ jobs:
 
     - name: Install and build with PyInstaller
       run: |
-        if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+        if [ "${{ matrix.platform }}" == "windows" ]; then
           ICON_OPTION="--icon=icon.ico"
-        elif [ "${{ matrix.platform }}" == "macos-latest" ]; then
+        elif [ "${{ matrix.platform }}" == "macos" ]; then
           ICON_OPTION="--icon=icon.icns"
         else
           ICON_OPTION=""
@@ -46,7 +46,7 @@ jobs:
         pyinstaller --onefile $ICON_OPTION mygirlfriendisasleep.py
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mygirlfriendisasleep-${{ matrix.platform }}
         path: dist/mygirlfriendisasleep*
@@ -58,10 +58,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
 
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
@@ -74,11 +74,11 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        release_name: MyGirlfriendIsAsleep ${{ github.ref }}
         body: ${{ steps.changelog.outputs.content }}
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ github.ref }}.exe
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ github.ref }}
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-windows/mygirlfriendisasleep-${{ github.ref }}.exe
+          ./mygirlfriendisasleep-ubuntu/mygirlfriendisasleep-${{ github.ref }}
+          ./mygirlfriendisasleep-macos/mygirlfriendisasleep-${{ github.ref }}

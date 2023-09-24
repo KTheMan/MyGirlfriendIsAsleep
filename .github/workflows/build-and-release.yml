@@ -84,7 +84,7 @@ jobs:
           ICON_OPTION=""
         fi
         pip install pyinstaller
-        pyinstaller --onefile $ICON_OPTION -n mygirlfriendisasleep-$version mygirlfriendisasleep.py
+        pyinstaller --onefile $ICON_OPTION -n mygirlfriendisasleep-${{ env.version }} mygirlfriendisasleep.py
       shell: bash
 
     - name: Upload build artifacts
@@ -108,7 +108,7 @@ jobs:
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog
       run: |
-        CHANGELOG_CONTENT=$(awk -v version=$version 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
+        CHANGELOG_CONTENT=$(awk -v version=${{ env.version }} 'BEGIN {printmode=0; changelog=""} $0 ~ version {printmode=1} printmode {changelog=changelog"\n"$0} $0 ~ "^## " && $0 !~ version {printmode=0} END {print changelog}' CHANGELOG.md)
         ESCAPED_CHANGELOG_CONTENT=$(echo "$CHANGELOG_CONTENT" | sed 's/[\#\$\&\*\?\|\\"\<\>\;\(\)]/\\&/g')
         echo "changelog_content=$ESCAPED_CHANGELOG_CONTENT" >> "$GITHUB_OUTPUT"
 
@@ -116,12 +116,12 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: $version
-        name: MyGirlfriendIsAsleep $version
+        tag_name: ${{ env.version }}
+        name: MyGirlfriendIsAsleep ${{ env.version }}
         body: "$changelog_content"
         draft: false
         prerelease: false
         files: |
-          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-$version.exe
-          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-$version
-          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-$version
+          ./mygirlfriendisasleep-windows-latest/mygirlfriendisasleep-${{ env.version }}.exe
+          ./mygirlfriendisasleep-ubuntu-latest/mygirlfriendisasleep-${{ env.version }}
+          ./mygirlfriendisasleep-macos-latest/mygirlfriendisasleep-${{ env.version }}

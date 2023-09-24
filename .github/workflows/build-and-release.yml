@@ -27,6 +27,18 @@ jobs:
     - name: Generate .ico and .icns icons
       run: icon-gen -i icon.svg -o ./icons --ico --ico-sizes 256 --icns --icns-sizes 256
 
+    - name: Check for generated icons
+      run: |
+        if [ ! -f ./icons/icon.ico ]; then
+          echo "icon.ico not found!"
+          exit 1
+        fi
+        if [ ! -f ./icons/icon.icns ]; then
+          echo "icon.icns not found!"
+          exit 1
+        fi
+      shell: bash
+
     - name: Upload icons as artifacts
       uses: actions/upload-artifact@v3
       with:

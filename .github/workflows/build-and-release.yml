@@ -72,31 +72,16 @@ jobs:
         name: icons
         path: ./icons
         
-    - name: Extract version from tag (bash/pwsh)
+    - name: Extract version from tag
       id: version
-      shell: bash
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        if [ -z "$VERSION" ]; then
-          echo "Version not set!"
-          exit 1
-        fi
-        echo "version=$VERSION" >> $GITHUB_ENV
-      if: runner.os != 'Windows'
-    
-    - name: Extract version from tag (Windows)
-      id: version_windows
-      shell: pwsh
-      run: |
-        $VERSION = $env:GITHUB_REF -replace 'refs/tags/', ''
-        if (-not $VERSION) {
-          Write-Host "Version not set!"
-          exit 1
-        }
-        Add-Content -Path $env:GITHUB_ENV -Value "version=$VERSION"
-      if: runner.os == 'Windows'
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
 
-    
+    - name: Debug print version
+      run: echo "Extracted Version: $version"
+
+    - name: Debug print GITHUB_REF
+      run: echo "GITHUB_REF: $GITHUB_REF"
+
     - name: Install and build with PyInstaller
       run: |
         if [ "${{ matrix.platform }}" == "windows-latest" ]; then

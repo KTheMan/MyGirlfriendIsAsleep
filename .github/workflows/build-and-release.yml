@@ -50,7 +50,6 @@ jobs:
    
   build:
     name: Build
-    id: build
     needs: icon-conversion
     strategy:
       matrix:

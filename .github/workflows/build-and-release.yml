@@ -87,6 +87,14 @@ jobs:
         pyinstaller --onefile $ICON_OPTION -n mygirlfriendisasleep-${{ env.version }} mygirlfriendisasleep.py
       shell: bash
 
+    - name: Rename executables for differentiation
+      run: |
+        if [ "${{ matrix.platform }}" == "macos-latest" ]; then
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-mac
+        elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
+          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-linux
+        fi
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -106,14 +114,6 @@ jobs:
 
     - name: Download build artifacts
       uses: actions/download-artifact@v3
-
-    - name: Rename executables for differentiation
-      run: |
-        if [ "${{ matrix.platform }}" == "macos-latest" ]; then
-          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-mac
-        elif [ "${{ matrix.platform }}" == "ubuntu-latest" ]; then
-          mv dist/mygirlfriendisasleep-${{ env.version }} dist/mygirlfriendisasleep-${{ env.version }}-linux
-        fi
 
     - name: Extract changes for the current release from CHANGELOG.md
       id: changelog

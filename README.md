@@ -1,18 +1,18 @@
 # My Girlfriend Is Asleep
 
-`MyGirlfriendIsAsleep` is a cross-platform script designed to help users turn off their physical displays with the option to automatically turn them back on at a specified time. Especially useful when you want to keep your room dark while streaming content!
+`MyGirlfriendIsAsleep` is a **planned** cross-platform script designed to help users turn off their physical displays with the option to automatically turn them back on at a specified time. Especially useful when you want to keep your room dark while streaming content! This will probably require use of a hardware EDID emulator (aka Headless dongle).
 
 [![Build and Release](https://github.com/KTheMan/MyGirlfriendIsAsleep/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/KTheMan/MyGirlfriendIsAsleep/actions/workflows/build-and-release.yml)
 
 ## Features
 
-- **Cross-Platform**: Works on Windows and Linux. Potential macOS support in the future
+- **Cross-Platform**: Will eventually work on Windows and Linux. Potential macOS support in the future
 - **Dependency Checks**: Automatically verifies the presence of required tools and provides installation guidance.
 - **Delayed Monitor Activation**: With the `--shesasleepuntil` flag, set a specific time for the monitors to reactivate. Use `--force` to turn on the display before the set time.
 
 ## Usage
 
-To can run the executable:
+To run the executable:
 
 - **Turn off the display**: 
   ```bash
